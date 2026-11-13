@@ -1,0 +1,1521 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>现金市场观察 · 我的订阅 / 收益总览</title>
+<style>
+:root{
+  --bg:#080b11; --bg2:#0d121b; --card:#111823; --card2:#16202e;
+  --line:#1f2c3d; --line2:#2a3a50;
+  --tx:#e8edf5; --tx2:#94a3b8; --tx3:#64748b;
+  --gold:#f2b544; --teal:#35d0ba; --red:#f2596a; --blue:#5aa9f2;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 500px at 12% -8%, rgba(242,181,68,.10), transparent 60%),
+    radial-gradient(900px 600px at 100% 0%, rgba(53,208,186,.07), transparent 55%),
+    var(--bg);
+  color:var(--tx);
+  font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  font-size:15px; line-height:1.65; padding:0 0 60px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+h1,h2,h3{margin:0;font-weight:700}
+button{font-family:inherit}
+
+/* 顶部 */
+header.top{padding:30px 0 16px}
+.kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;color:var(--gold);
+  border:1px solid rgba(242,181,68,.3);background:rgba(242,181,68,.07);padding:3px 11px;border-radius:99px}
+h1{font-size:clamp(22px,3.6vw,30px);margin:12px 0 6px;line-height:1.3}
+h1 em{font-style:normal;color:var(--gold)}
+.sub{color:var(--tx2);font-size:13.5px;margin:0}
+
+/* 导航 */
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(8,11,17,.92);backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);margin-top:16px}
+.tabs-in{max-width:1080px;margin:0 auto;padding:0 16px;display:flex;gap:6px}
+.tab{flex:1;background:none;border:none;color:var(--tx3);font-size:14.5px;padding:13px 10px;cursor:pointer;
+  border-bottom:2px solid transparent;transition:.18s;font-weight:600}
+.tab:hover{color:var(--tx2)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+.tab small{display:block;font-size:10.5px;font-weight:400;color:var(--tx3);margin-top:1px}
+.tab.on small{color:rgba(242,181,68,.7)}
+
+/* 通用 */
+section.page{display:none;padding-top:22px}
+section.page.on{display:block}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin:26px 0 12px;flex-wrap:wrap}
+.sec-h h2{font-size:17px}
+.sec-h span{font-size:12px;color:var(--tx3)}
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card+.card{margin-top:12px}
+
+/* 行情状态条 */
+.livebar{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--tx2);flex-wrap:wrap;
+  background:rgba(53,208,186,.05);border:1px solid rgba(53,208,186,.2);border-radius:10px;padding:8px 12px;margin-bottom:12px}
+.livebar .dot{width:7px;height:7px;border-radius:50%;background:var(--teal);flex:0 0 auto;
+  box-shadow:0 0 0 0 rgba(53,208,186,.6);animation:pulse 2.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(53,208,186,.5)}70%{box-shadow:0 0 0 7px rgba(53,208,186,0)}100%{box-shadow:0 0 0 0 rgba(53,208,186,0)}}
+.livebar.err{border-color:rgba(242,89,106,.3);background:rgba(242,89,106,.06);color:#f0b8be}
+.livebar.err .dot{background:var(--red);animation:none}
+.livebar button{margin-left:auto;background:none;border:1px solid var(--line2);color:var(--tx2);
+  border-radius:7px;padding:3px 10px;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.livebar button:hover{border-color:var(--teal);color:var(--teal)}
+
+/* 表格 */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table.repo{min-width:560px}
+table.prod{min-width:1060px}
+thead th{position:sticky;top:0;background:#0c131d;color:var(--tx2);font-weight:600;font-size:11px;
+  letter-spacing:.05em;text-align:left;padding:10px 11px;border-bottom:1px solid var(--line2);white-space:nowrap;z-index:2}
+thead th.num{text-align:right}
+tbody td{padding:10px 11px;border-bottom:1px solid rgba(31,44,61,.6);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* 标签 */
+.tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:4px;white-space:nowrap;vertical-align:1px}
+.tag.gold{background:rgba(242,181,68,.14);color:var(--gold)}
+.tag.teal{background:rgba(53,208,186,.14);color:var(--teal)}
+.tag.blue{background:rgba(90,169,242,.14);color:var(--blue)}
+.tag.red{background:rgba(242,89,106,.14);color:var(--red)}
+.tag.gray{background:rgba(148,163,184,.13);color:var(--tx2)}
+
+/* 提醒卡片 */
+.alert-card{margin-top:12px;background:linear-gradient(160deg,rgba(242,181,68,.06),var(--card));
+  border:1px solid rgba(242,181,68,.22);border-radius:13px;padding:15px 17px;transition:.3s}
+.alert-card.hot{border-color:rgba(242,181,68,.65);background:linear-gradient(160deg,rgba(242,181,68,.18),var(--card));
+  box-shadow:0 0 0 1px rgba(242,181,68,.15),0 8px 30px -12px rgba(242,181,68,.35)}
+.alert-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.alert-head .t{font-size:14px;font-weight:700;color:var(--gold)}
+.alert-head .s{font-size:11.5px;color:var(--tx3)}
+.alert-body{display:grid;grid-template-columns:200px 1fr 1fr;gap:18px;align-items:start}
+@media(max-width:820px){.alert-body{grid-template-columns:1fr;gap:12px}}
+.alert-th{display:flex;align-items:center;gap:7px}
+.alert-th input{width:76px;background:#070a10;border:1px solid var(--line2);color:var(--gold);
+  border-radius:8px;padding:5px 9px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;outline:none}
+.alert-th input:focus{border-color:var(--gold)}
+.alert-th span{font-size:12px;color:var(--tx3)}
+.alert-note{font-size:11px;color:var(--tx3);margin-top:5px;line-height:1.5}
+.alert-state{font-size:13px;line-height:1.7;color:var(--tx2)}
+.alert-state b{font-size:18px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums}
+.alert-card.hot .alert-state b{color:var(--gold)}
+.alert-win{font-size:12.5px;color:var(--tx2);line-height:1.65}
+.alert-win b{color:var(--gold)}
+
+/* 订阅列表 */
+.sub-list{display:grid;gap:10px}
+.sub-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px}
+.sub-item:hover{border-color:var(--line2)}
+.sub-main{flex:1;min-width:0}
+.sub-name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.sub-meta{font-size:11.5px;color:var(--tx3);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.sub-rate{text-align:right;min-width:82px}
+.sub-rate b{font-size:18px;font-variant-numeric:tabular-nums;color:var(--gold)}
+.sub-rate span{font-size:10.5px;color:var(--tx3);display:block}
+.icon-btn{background:none;border:1px solid var(--line2);color:var(--tx3);border-radius:8px;
+  width:30px;height:30px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.icon-btn:hover{border-color:var(--red);color:var(--red)}
+.empty{padding:26px 16px;text-align:center;color:var(--tx3);font-size:13px;
+  border:1px dashed var(--line2);border-radius:12px}
+
+/* 筛选栏 */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filters select{background:#0a1018;border:1px solid var(--line2);color:var(--tx);border-radius:8px;
+  padding:6px 9px;font-size:12.5px;font-family:inherit;cursor:pointer;outline:none}
+.filters select:focus{border-color:var(--gold)}
+.filters .lbl{font-size:11.5px;color:var(--tx3)}
+.warn-inline{font-size:11.5px;color:var(--gold);background:rgba(242,181,68,.07);
+  border:1px solid rgba(242,181,68,.22);border-radius:8px;padding:7px 11px;margin-bottom:10px;line-height:1.6}
+
+/* 产品行按钮 */
+.add-btn{background:none;border:1px solid var(--line2);color:var(--tx2);border-radius:6px;
+  padding:2px 8px;font-size:11px;cursor:pointer;white-space:nowrap}
+.add-btn:hover{border-color:var(--gold);color:var(--gold)}
+.add-btn.on{border-color:var(--teal);color:var(--teal);background:rgba(53,208,186,.1)}
+
+/* 测算 */
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:14px}
+.calc-field label{display:block;font-size:11.5px;color:var(--tx3);margin-bottom:5px}
+.calc-field input,.calc-field select{width:100%;background:#070a10;border:1px solid var(--line2);color:var(--tx);
+  border-radius:8px;padding:8px 10px;font-size:14px;font-family:inherit;outline:none;font-variant-numeric:tabular-nums}
+.calc-field input:focus,.calc-field select:focus{border-color:var(--gold)}
+.calc-result{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.calc-row{display:grid;grid-template-columns:1fr 90px 90px 1fr;gap:8px;padding:10px 13px;
+  font-size:13px;border-bottom:1px solid rgba(31,44,61,.6);align-items:center}
+.calc-row:last-child{border-bottom:none}
+.calc-row.head{background:#0c131d;font-size:11px;color:var(--tx2);letter-spacing:.04em}
+.calc-row .mono{font-variant-numeric:tabular-nums;text-align:right}
+.calc-row .diff{font-size:12px;text-align:right}
+@media(max-width:640px){.calc-row{grid-template-columns:1fr 1fr;gap:4px}.calc-row.head{display:none}}
+
+footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--tx3);line-height:1.8}
+.tip{font-size:12.5px;color:var(--tx2);background:rgba(53,208,186,.05);border:1px solid rgba(53,208,186,.18);
+  border-radius:10px;padding:11px 14px;line-height:1.7;margin-top:12px}
+.tip b{color:var(--teal)}
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="kicker">现金 · 市场观察</div>
+  <h1>看清现在的<em>现金市场</em></h1>
+  <p class="sub">A 页盯行情与提醒，B 页比全市场产品。不替你决定钱放哪，只把信息摆清楚。</p>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-in">
+    <button class="tab on" id="tabA">我的订阅<small>行情 · 提醒 · 关注</small></button>
+    <button class="tab" id="tabB">现金收益总览<small>全部产品 · 筛选 · 测算</small></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ══════════ 页面 A ══════════ -->
+<section class="page on" id="pageA">
+
+  <div class="livebar" id="livebar">
+    <span class="dot"></span>
+    <span id="livetext">正在获取行情…</span>
+    <button id="btnLive">重新抓取</button>
+  </div>
+
+  <div class="sec-h"><h2>① 国债逆回购行情</h2><span id="repohint">沪深分列</span></div>
+  <div class="tbl-wrap">
+    <table class="repo">
+      <thead>
+        <tr>
+          <th style="width:120px">期限</th>
+          <th class="num">沪市 GC</th>
+          <th class="num">深市 R</th>
+          <th class="num">两市价差</th>
+          <th class="num">取较高</th>
+          <th class="num">沪市昨收</th>
+        </tr>
+      </thead>
+      <tbody id="repobody">
+        <tr><td colspan="6" style="padding:16px 11px;color:var(--tx3)">正在获取沪市与深市行情…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec-h"><h2>② 行情提醒</h2><span>沪深分别判断，达到阈值才提醒</span></div>
+  <div class="alert-card" id="alertcard">
+    <div class="alert-head">
+      <span class="t">⏰ 高位提醒</span>
+      <span class="s">逆回购平常那点利息不值得折腾，值得动手的是它冲到高位的那几天</span>
+    </div>
+    <div class="alert-body">
+      <div>
+        <div class="alert-th">
+          <span style="font-size:12px;color:var(--tx2)">触发阈值</span>
+          <input type="number" id="alertTh" step="0.05" min="0.5" max="3" value="1.55">
+          <span style="font-size:12px;color:var(--tx3)">%</span>
+        </div>
+        <div class="alert-note">改完自动记住（存在本机）</div>
+      </div>
+      <div class="alert-state" id="alertState">正在等行情…</div>
+      <div class="alert-win" id="alertWin">—</div>
+    </div>
+  </div>
+
+  <div class="sec-h"><h2>③ 我的关注</h2><span id="subhint">在 B 页点「+ 关注」可加进来</span></div>
+  <div class="sub-list" id="subList"></div>
+
+  <div class="tip">
+    <b>关于到账：</b>证券账户里「可以卖出」不等于「钱到了银行卡」。逆回购 T+1 可用、T+2 可取现；
+    场内 ETF 当天能卖，资金 T+1 才能转出。B 页的到账列都按真实到账写。
+  </div>
+</section>
+
+<!-- ══════════ 页面 B ══════════ -->
+<section class="page" id="pageB">
+
+  <div class="sec-h"><h2>① 全部产品</h2><span id="prodhint"></span></div>
+
+  <div class="filters">
+    <span class="lbl">类别</span>
+    <select id="fCat"><option value="all">全部</option></select>
+    <span class="lbl">安全</span>
+    <select id="fSafety">
+      <option value="all">全部</option>
+      <option value="deposit">存款保险</option>
+      <option value="sovereign">国家信用</option>
+      <option value="exchange">交易所担保</option>
+      <option value="none">非保本</option>
+    </select>
+    <span class="lbl">数据</span>
+    <select id="fStatus">
+      <option value="all">全部</option>
+      <option value="verified">已核实</option>
+      <option value="estimated">估算</option>
+      <option value="pending">待核实</option>
+      <option value="unknown">未知</option>
+    </select>
+    <span class="lbl">排序</span>
+    <select id="fSort">
+      <option value="rate">收益率 ↓</option>
+      <option value="term">期限 ↑</option>
+      <option value="settle">到账 ↑</option>
+      <option value="update">更新时间 ↓</option>
+    </select>
+  </div>
+
+  <div class="warn-inline" id="mixWarn" style="display:none"></div>
+
+  <div class="tbl-wrap">
+    <table class="prod">
+      <thead>
+        <tr>
+          <th style="width:180px">产品</th>
+          <th class="num" style="width:86px">收益率</th>
+          <th style="width:84px">收益口径</th>
+          <th style="width:70px">期限</th>
+          <th style="width:112px">到账</th>
+          <th style="min-width:148px">流动性</th>
+          <th style="width:140px">安全属性</th>
+          <th style="width:100px">额度</th>
+          <th style="width:78px">状态</th>
+          <th style="width:60px"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- ══ 国债逆回购专区 ══ -->
+  <section id="repoZone">
+    <div class="sec-h"><h2>② 国债逆回购专区</h2><span>独立交易品种，不参与上面的现金产品比较</span></div>
+    <div class="warn-inline" style="display:block">
+      逆回购是「按天计息的短期出借」，<b>实际挂牌期限最长 182 天</b>，不存在 36 个月、60 个月这类长期品种。
+      所以它不参与普通存款/基金的期限筛选与收益测算。完整实时行情与高位提醒在「我的订阅」页。
+    </div>
+    <div class="tbl-wrap">
+      <table class="repo">
+        <thead>
+          <tr>
+            <th style="width:90px">期限</th>
+            <th style="width:130px">沪市代码</th>
+            <th style="width:130px">深市代码</th>
+            <th class="num">沪市报价</th>
+            <th class="num">深市报价</th>
+            <th style="width:130px">数据状态</th>
+          </tr>
+        </thead>
+        <tbody id="repobodyB"><tr><td colspan="6" style="padding:14px 11px;color:var(--tx3)">等待行情…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="sec-h" style="margin-top:22px"><h2>近 30 个交易日走势</h2><span id="histhint">GC001 / R-001 收盘年化</span></div>
+    <div class="card" style="padding:10px 12px">
+      <svg id="histchart" viewBox="0 0 720 200" style="display:block;width:100%;height:auto"></svg>
+      <div id="histinfo" style="font-size:12px;color:var(--tx2);padding:6px 4px 2px"></div>
+    </div>
+
+    <div class="sec-h" style="margin-top:20px"><h2>今日分时</h2><span id="minhint">沪 GC001 实线 · 深 R-001 虚线</span></div>
+    <div class="card" style="padding:10px 12px">
+      <svg id="minchart" viewBox="0 0 720 190" style="display:block;width:100%;height:auto"></svg>
+      <div id="mininfo" style="font-size:12px;color:var(--tx2);padding:6px 4px 2px"></div>
+    </div>
+
+    <div class="sec-h" style="margin-top:22px"><h2>单次交易测算</h2><span>只算一次，不模拟续作</span></div>
+    <div class="card">
+      <div class="calc-grid">
+        <div class="calc-field">
+          <label>本金（万元）</label>
+          <input type="number" id="repoAmount" value="10" min="0.1" step="1">
+        </div>
+      </div>
+      <div class="calc-result" id="repoCalc">
+        <div class="calc-row"><div style="color:var(--tx3);font-size:12.5px">等待行情…</div></div>
+      </div>
+      <div class="tip" style="margin-top:12px">
+        逆回购是<b>单次操作</b>：到期后资金自动回到证券账户，要不要接着做下一笔，是下一次的决定。
+        这里只算你这一笔的实际收益，不假设「每天都能拿到同样利率」。
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-h"><h2>③ 简单测算（普通产品）</h2><span>勾选产品后填入本金与持有期限</span></div>
+  <div class="card">
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>本金（万元）</label>
+        <input type="number" id="calcAmount" value="50" min="0.1" step="1">
+      </div>
+      <div class="calc-field">
+        <label>计划持有（月）</label>
+        <input type="number" id="calcMonths" value="12" min="1" max="120" step="1">
+      </div>
+      <div class="calc-field">
+        <label>已勾选</label>
+        <div style="font-size:13px;color:var(--tx2);padding:8px 0" id="calcCount">0 个产品</div>
+      </div>
+    </div>
+    <div class="calc-result" id="calcResult">
+      <div class="calc-row"><div style="color:var(--tx3);font-size:12.5px">在表格里勾选产品（最多 4 个），这里显示对比</div></div>
+    </div>
+    <div class="tip" style="margin-top:12px">
+      测算按 <b>单利</b> 计算：收益 = 本金 × 年化 ÷ 100 × 持有月数 ÷ 12。
+      标记为「历史收益」或「实时报价」的产品，这个数<b>不是承诺</b>，只是按当前数字推的。
+    </div>
+  </div>
+
+  <div class="sec-h"><h2>④ 数据说明</h2><span>来源与更新时间</span></div>
+  <div class="card" style="font-size:12.5px;color:var(--tx2);line-height:1.9">
+    <div><b style="color:var(--tx)">收益率来源</b>：银行挂牌利率来自公开报道（2026-11-11）；大额存单来自证券日报（2026-11-07）；
+    储蓄国债来自财政部财债〔2026〕44 号公告；基金与 ETF 为天天基金净值（2026-11-12）；逆回购为腾讯行情实时抓取。</div>
+    <div style="margin-top:8px"><b style="color:var(--tx)">数据状态</b>：
+      <span class="tag teal">已核实</span> 有可靠来源 ·
+      <span class="tag blue">估算</span> 依据明确但非确定值 ·
+      <span class="tag gold">待核实</span> 有信息未核对 ·
+      <span class="tag gray">未知</span> 没有可靠数据</div>
+    <div style="margin-top:8px"><b style="color:var(--tx)">原始 29 条产品的 rate 数值一律未改</b>。若发现某条已过期或有疑问，保留原值并标状态，不擅自替换。</div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div>现金市场观察工具 · 单文件离线可用 · 数据截至 2026-11-13</div>
+  <div>本工具只做信息展示与简单测算，不构成投资建议。利率每天在变、各行不同、部分产品有额度与属地限制，下单前请以银行/券商 App 当日公告为准。</div>
+</footer>
+
+</main>
+
+<script>
+/* ═══════════════════════════════════════════
+   一、产品库（29 条，rate 一律保持 v1.0 原值）
+   字段：id/name/cat/rate/basis/term/termDays/liq/settle/settleDays
+        safety/cap/src/update/status
+   ═══════════════════════════════════════════ */
+const PRODUCTS = [
+{id:'huoqi',name:'活期存款',cat:'活期存款',rate:0.05,basis:'contract',basisNote:'挂牌利率',
+ term:'无期限',termDays:0,liq:'随时存取，无限制',settle:'即时到账',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'tongzhi7',name:'七天通知存款',cat:'通知存款',rate:0.45,basis:'contract',basisNote:'大行挂牌',
+ term:'7天',termDays:7,liq:'提前 7 天通知支取',settle:'通知后 T+1',settleDays:1,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'大行挂牌 / 21世纪经济报道',update:'2026-11-11',status:'verified'},
+
+{id:'cd3m',name:'整存整取 3个月',cat:'定期存款',rate:0.65,basis:'contract',basisNote:'挂牌利率',
+ term:'3个月',termDays:90,liq:'到期支取；提前取按活期 0.05% 计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd6m',name:'整存整取 6个月',cat:'定期存款',rate:0.85,basis:'contract',basisNote:'挂牌利率',
+ term:'6个月',termDays:180,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd1y',name:'整存整取 1年',cat:'定期存款',rate:0.95,basis:'contract',basisNote:'挂牌利率',
+ term:'1年',termDays:365,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd1y_s',name:'整存整取 1年·股份行',cat:'定期存款',rate:1.15,basis:'contract',basisNote:'挂牌利率',
+ term:'1年',termDays:365,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'光大/华夏/民生/平安/浦发/广发/中信 报价',update:'2026-11-11',status:'verified'},
+
+{id:'cd2y',name:'整存整取 2年',cat:'定期存款',rate:1.05,basis:'contract',basisNote:'挂牌利率',
+ term:'2年',termDays:730,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd3y',name:'整存整取 3年',cat:'定期存款',rate:1.25,basis:'contract',basisNote:'挂牌利率',
+ term:'3年',termDays:1095,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd5y',name:'整存整取 5年',cat:'定期存款',rate:1.30,basis:'contract',basisNote:'挂牌利率',
+ term:'5年',termDays:1825,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'六大行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd_3y_s',name:'整存整取 3年·股份行',cat:'定期存款',rate:1.30,basis:'contract',basisNote:'挂牌利率',
+ term:'3年',termDays:1095,liq:'到期支取；提前取按活期计息',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'无单笔上限',src:'股份行挂牌 26-11-11',update:'2026-11-11',status:'verified'},
+
+{id:'cd_big3',name:'大额存单 3年·国有大行',cat:'大额存单',rate:1.55,basis:'contract',basisNote:'发行公告',
+ term:'3年',termDays:1095,liq:'20万起。可转让（App挂单等接手）；到期支取',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'单期额度有限，具体待核实',src:'证券日报 26-11-07',update:'2026-11-07',status:'verified'},
+
+{id:'cd_big3_s',name:'大额存单 3年·股份行',cat:'大额存单',rate:1.70,basis:'contract',basisNote:'发行公告',
+ term:'3年',termDays:1095,liq:'20万起。可转让；到期支取',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'单期额度有限，具体待核实',src:'证券日报 26-11-07（中信等）',update:'2026-11-07',status:'verified'},
+
+{id:'cd_big3_f',name:'大额存单 3年·外资行',cat:'大额存单',rate:1.92,basis:'contract',basisNote:'发行公告',
+ term:'3年',termDays:1095,liq:'20万起。可转让；到期支取',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'单期额度有限，具体待核实',src:'证券日报 26-11-07（永丰中国）',update:'2026-11-07',status:'verified'},
+
+{id:'cd_big3_p',name:'大额存单 3年·民营银行',cat:'大额存单',rate:2.00,basis:'contract',basisNote:'发行公告',
+ term:'3年',termDays:1095,liq:'20万起。有额度/属地/新资金门槛',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'有额度与属地限制，待核实',src:'证券日报 26-11-07（锡商、众邦）',update:'2026-11-07',status:'verified'},
+
+{id:'cd_big5',name:'大额存单 5年·国有大行',cat:'大额存单',rate:1.60,basis:'contract',basisNote:'发行公告',
+ term:'5年',termDays:1825,liq:'20万起。可转让；到期支取',settle:'到期当天',settleDays:0,
+ safety:'存款保险（50万内本息）',cap:'单期额度有限，具体待核实',src:'证券日报 26-11-07',update:'2026-11-07',status:'verified'},
+
+{id:'bond3',name:'储蓄国债 3年（电子式）',cat:'储蓄国债',rate:1.63,basis:'contract',basisNote:'票面利率',
+ term:'3年',termDays:1095,liq:'按年付息。提前兑取：不满6月不计息，满6月扣180天息',settle:'到期当天（柜面）',settleDays:0,
+ safety:'国家信用·到期偿付（非存款保险）',cap:'单账户每期 50 万',src:'财政部 财债〔2026〕44号',update:'2026-11-06',status:'verified'},
+
+{id:'bond5',name:'储蓄国债 5年（电子式）',cat:'储蓄国债',rate:1.70,basis:'contract',basisNote:'票面利率',
+ term:'5年',termDays:1825,liq:'按年付息。提前兑取扣息规则同 3 年期',settle:'到期当天（柜面）',settleDays:0,
+ safety:'国家信用·到期偿付（非存款保险）',cap:'单账户每期 50 万',src:'财政部 财债〔2026〕44号',update:'2026-11-06',status:'verified'},
+
+{id:'struct',name:'结构性存款',cat:'结构性存款',rate:1.39,basis:'estimated',basisNote:'行业预期中间值',
+ term:'约3个月',termDays:91,liq:'到期兑付；保本不保息，收益看挂钩条件',settle:'到期当天',settleDays:0,
+ safety:'合同约定保本（条款待核实）',cap:'各期不同，待核实',src:'融360 2026年9月报告',update:'2026-09',status:'pending'},
+
+{id:'receipt',name:'券商收益凭证（本金保障型）',cat:'券商理财',rate:1.65,basis:'estimated',basisNote:'区间中值估算',
+ term:'约6个月',termDays:180,liq:'到期兑付；由券商自身信用承担',settle:'到期后 T+1',settleDays:1,
+ safety:'合同约定保本（条款待核实）',cap:'额度少、不定期，待核实',src:'区间 1.5%~1.8% 取中值',update:'2026-11',status:'pending'},
+
+{id:'mmf',name:'货币基金（余额宝类）',cat:'货币基金',rate:0.80,basis:'historical',basisNote:'7日年化',
+ term:'无期限',termDays:0,liq:'随时赎回；T+0快取一般限1万/日',settle:'T+1 到账',settleDays:1,
+ safety:'非保本·净值型',cap:'无申购上限',src:'天弘余额宝 26-11-12',update:'2026-11-12',status:'verified'},
+
+{id:'cashwm',name:'现金管理类理财',cat:'现金管理类',rate:1.30,basis:'historical',basisNote:'行业区间',
+ term:'无期限',termDays:0,liq:'随时赎回（部分产品）',settle:'T+1 到账',settleDays:1,
+ safety:'非保本·净值型',cap:'无申购上限',src:'2026H1 主流 1.0%~1.3%',update:'2026-07',status:'estimated'},
+
+{id:'ncd',name:'同业存单指数基金（7天持有）',cat:'货币基金',rate:1.20,basis:'historical',basisNote:'近1年',
+ term:'7天持有',termDays:7,liq:'持有满 7 天后可赎回',settle:'T+1 到账',settleDays:1,
+ safety:'非保本·净值型',cap:'无申购上限',src:'015644 / 014437 近1年',update:'2026-11-12',status:'verified'},
+
+{id:'repo1',name:'国债逆回购 1天期',cat:'国债逆回购',rate:1.20,basis:'realtime',basisNote:'实时年化',
+ term:'1天',termDays:1,liq:'当日 15:30 前操作；需证券账户',settle:'T+1 可用 / T+2 可取现',settleDays:2,
+ safety:'交易所担保交收（非存款保险）',cap:'无单笔上限',src:'沪深两市取高，实时抓',update:'实时',status:'verified',
+ quoteStatus:'snapshot',quoteRate:null,quoteUpdatedAt:null},
+
+{id:'repo7',name:'国债逆回购 7天期',cat:'国债逆回购',rate:1.37,basis:'realtime',basisNote:'实时年化',
+ term:'7天',termDays:7,liq:'当日 15:30 前操作；需证券账户',settle:'T+1 可用 / T+2 可取现',settleDays:2,
+ safety:'交易所担保交收（非存款保险）',cap:'无单笔上限',src:'沪深两市取高，实时抓',update:'实时',status:'verified',
+ quoteStatus:'snapshot',quoteRate:null,quoteUpdatedAt:null},
+
+{id:'repo14',name:'国债逆回购 14天期',cat:'国债逆回购',rate:1.37,basis:'realtime',basisNote:'实时年化',
+ term:'14天',termDays:14,liq:'当日 15:30 前操作；需证券账户',settle:'T+1 可用 / T+2 可取现',settleDays:2,
+ safety:'交易所担保交收（非存款保险）',cap:'无单笔上限',src:'沪深两市取高，实时抓',update:'实时',status:'verified',
+ quoteStatus:'snapshot',quoteRate:null,quoteUpdatedAt:null},
+
+{id:'repo28',name:'国债逆回购 28天期',cat:'国债逆回购',rate:1.36,basis:'realtime',basisNote:'实时年化',
+ term:'28天',termDays:28,liq:'当日 15:30 前操作；需证券账户',settle:'T+1 可用 / T+2 可取现',settleDays:2,
+ safety:'交易所担保交收（非存款保险）',cap:'无单笔上限',src:'沪深两市取高，实时抓',update:'实时',status:'verified',
+ quoteStatus:'snapshot',quoteRate:null,quoteUpdatedAt:null},
+
+{id:'etf短融',name:'短融ETF 511360',cat:'场内ETF',rate:1.38,basis:'historical',basisNote:'近1年',
+ term:'无期限',termDays:0,liq:'场内 T+0 可卖；需证券账户',settle:'卖出当日可交易，T+1 可转出',settleDays:1,
+ safety:'非保本·净值波动',cap:'无申购上限',src:'近1年 26-11-12（近3月折年约1.3%）',update:'2026-11-12',status:'verified'},
+
+{id:'etf国债',name:'国债ETF 511010（5年久期）',cat:'场内ETF',rate:2.41,basis:'historical',basisNote:'近1年',
+ term:'无期限',termDays:0,liq:'场内 T+0 可卖；净值随利率波动',settle:'卖出当日可交易，T+1 可转出',settleDays:1,
+ safety:'非保本·净值波动',cap:'无申购上限',src:'近1年 26-11-12（近3月0.62%）',update:'2026-11-12',status:'verified'},
+
+{id:'etf国债10',name:'十年国债ETF 511260',cat:'场内ETF',rate:3.55,basis:'historical',basisNote:'近1年',
+ term:'无期限',termDays:0,liq:'场内 T+0 可卖；久期约10年，波动最大',settle:'卖出当日可交易，T+1 可转出',settleDays:1,
+ safety:'非保本·净值波动',cap:'无申购上限',src:'近1年 26-11-12（近3月1.25%）',update:'2026-11-12',status:'verified'}
+];
+
+/* ── 字段级核实状态（不改动上面的 rate）──
+   yield 收益 / liquid 流动性 / guarantee 保障 / cap 额度
+   verified 已核实 · estimated 估算 · pending 待核实 · unknown 未知 */
+const VERIFY = {
+  huoqi:      {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  tongzhi7:   {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd3m:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd6m:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd1y:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd1y_s:     {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd2y:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd3y:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd5y:       {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd_3y_s:    {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cd_big3:    {yield:'verified', liquid:'unknown',   guarantee:'verified', cap:'unknown'},
+  cd_big3_s:  {yield:'verified', liquid:'unknown',   guarantee:'verified', cap:'unknown'},
+  cd_big3_f:  {yield:'verified', liquid:'unknown',   guarantee:'verified', cap:'unknown'},
+  cd_big3_p:  {yield:'verified', liquid:'unknown',   guarantee:'verified', cap:'pending'},
+  cd_big5:    {yield:'verified', liquid:'unknown',   guarantee:'verified', cap:'unknown'},
+  bond3:      {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  bond5:      {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  struct:     {yield:'estimated',liquid:'estimated', guarantee:'pending',  cap:'unknown'},
+  receipt:    {yield:'estimated',liquid:'estimated', guarantee:'pending',  cap:'unknown'},
+  mmf:        {yield:'verified', liquid:'estimated', guarantee:'verified', cap:'verified'},
+  cashwm:     {yield:'estimated',liquid:'estimated', guarantee:'verified', cap:'verified'},
+  ncd:        {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  repo1:      {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  repo7:      {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  repo14:     {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  repo28:     {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  'etf短融':  {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  'etf国债':  {yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'},
+  'etf国债10':{yield:'verified', liquid:'verified',  guarantee:'verified', cap:'verified'}
+};
+PRODUCTS.forEach(p=>{
+  p.verify = VERIFY[p.id] || {yield:p.status, liquid:'unknown', guarantee:'unknown', cap:'unknown'};
+});
+
+/* ── 行情状态读取：快照与实时分开，rate 永不被覆盖 ── */
+function effectiveRate(p){
+  const st = p.quoteStatus;
+  if((st === 'live' || st === 'stale') && p.quoteRate != null){
+    return { v:p.quoteRate, live: st === 'live', stale: st === 'stale' };
+  }
+  return { v:p.rate, live:false, stale:false };
+}
+/* 行情状态徽标：实时 / 已过期 / 快照 */
+function quoteBadge(p){
+  const e = effectiveRate(p);
+  if(e.live)  return '<span class="tag teal">实时</span>';
+  if(e.stale) return '<span class="tag gold">已过期</span>';
+  if(p.basis === 'realtime') return '<span class="tag gray">快照</span>';
+  return '';
+}
+function rateNum(p){
+  const r = effectiveRate(p);
+  return p.basis === 'realtime' ? r.v.toFixed(3) : r.v.toFixed(2);
+}
+
+/* 沪深逆回购代码表（复用 v1.0） */
+/* 国债逆回购实际挂牌品种（最长 182 天，不存在 36/60 个月）
+   沪市 GC 系列 204xxx / 深市 R 系列 131xxx，两市品种一一对应 */
+const REPO_CODES = [
+  {term:'1天',   days:1,   g:'sh204001', r:'sz131810', rank:'repo1'},
+  {term:'2天',   days:2,   g:'sh204002', r:'sz131811', rank:null},
+  {term:'3天',   days:3,   g:'sh204003', r:'sz131800', rank:null},
+  {term:'4天',   days:4,   g:'sh204004', r:'sz131809', rank:null},
+  {term:'7天',   days:7,   g:'sh204007', r:'sz131801', rank:'repo7'},
+  {term:'14天',  days:14,  g:'sh204014', r:'sz131802', rank:'repo14'},
+  {term:'28天',  days:28,  g:'sh204028', r:'sz131803', rank:'repo28'},
+  {term:'91天',  days:91,  g:'sh204091', r:'sz131805', rank:null},
+  {term:'182天', days:182, g:'sh204182', r:'sz131806', rank:null}
+];
+
+const SNAP_DATE = '2026-11-13';
+
+/* ═══════════════════════════════════════════
+   二、状态
+   ═══════════════════════════════════════════ */
+const DEFAULT_SUBS = ['repo1','repo7','cd1y_s','bond3','mmf'];
+
+const S = {
+  page: 'A',
+  subs: DEFAULT_SUBS.slice(),
+  th: 1.55,
+  filter: { cat:'all', safety:'all', status:'all', sort:'rate' },
+  picked: [],            // 测算勾选的产品 id（最多 4）
+  expanded: new Set(),   // 已展开详情的产品 id
+  lastQuotes: null,
+  lastQuoteTime: null,
+  quoteStale: false,
+  history: null,
+  minute: null
+};
+
+/* localStorage 读写（file:// 下可能被禁，全部 try/catch） */
+function lsGet(k, dflt){
+  try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : dflt; }
+  catch(e){ return dflt; }
+}
+function lsSet(k, v){
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){}
+}
+
+/* ═══════════════════════════════════════════
+   三、工具
+   ═══════════════════════════════════════════ */
+const cl = (v,a,b)=>Math.min(b,Math.max(a,v));
+const fmtW = w => w>=10000 ? (w/10000).toFixed(2)+'亿' : w.toFixed(w%1?1:0)+'万';
+
+const BASIS_LABEL = {
+  contract:'合同利率', realtime:'实时报价', historical:'历史收益', estimated:'估算'
+};
+const BASIS_TAG = {
+  contract:'teal', realtime:'gold', historical:'blue', estimated:'gold'
+};
+const STATUS_LABEL = { verified:'已核实', estimated:'估算', pending:'待核实', unknown:'未知' };
+const STATUS_TAG   = { verified:'teal', estimated:'blue', pending:'gold', unknown:'gray' };
+
+function basisTag(b){ return `<span class="tag ${BASIS_TAG[b]||'gray'}">${BASIS_LABEL[b]||b}</span>`; }
+function statusTag(s){ return `<span class="tag ${STATUS_TAG[s]||'gray'}">${STATUS_LABEL[s]||s}</span>`; }
+
+function safetyKind(safety){
+  if(safety.includes('存款保险')) return 'deposit';
+  if(safety.includes('国家信用')) return 'sovereign';
+  if(safety.includes('交易所担保')) return 'exchange';
+  return 'none';
+}
+function safetyTag(safety){
+  const k = safetyKind(safety);
+  const cls = k==='deposit'?'teal':k==='sovereign'?'blue':k==='exchange'?'gold':'gray';
+  return `<span class="tag ${cls}" title="${safety}">${safety}</span>`;
+}
+
+/* ═══════════════════════════════════════════
+   四、页面切换
+   ═══════════════════════════════════════════ */
+function switchPage(p){
+  S.page = p;
+  document.getElementById('pageA').classList.toggle('on', p==='A');
+  document.getElementById('pageB').classList.toggle('on', p==='B');
+  document.getElementById('tabA').classList.toggle('on', p==='A');
+  document.getElementById('tabB').classList.toggle('on', p==='B');
+  if(p==='B') renderProducts();
+  window.scrollTo(0,0);
+}
+
+/* ═══════════════════════════════════════════
+   五、页面 A —— 行情表
+   ═══════════════════════════════════════════ */
+function parseQuote(raw){
+  if(!raw || typeof raw !== 'string') return null;
+  const p = raw.split('~');
+  if(p.length < 8) return null;
+  const price = parseFloat(p[3]);
+  const prev  = parseFloat(p[4]);
+  if(!isFinite(price) || price <= 0) return null;
+  const stamp = p[30] || '';
+  const when = stamp.length >= 12 ? (stamp.slice(8,10)+':'+stamp.slice(10,12)) : '';
+  return { price, prev: isFinite(prev)?prev:null, when };
+}
+
+function jsonpQuotes(codes){
+  return new Promise(resolve => {
+    codes.forEach(c => { try{ delete window['v_'+c]; }catch(e){ window['v_'+c]=undefined; } });
+    const s = document.createElement('script');
+    let settled = false;
+    const done = v => {
+      if(settled) return; settled = true; clearTimeout(tm);
+      try{ s.remove(); }catch(e){}
+      resolve(v);
+    };
+    const tm = setTimeout(()=>done(null), 6000);
+    s.onload = () => {
+      const out = {};
+      codes.forEach(c => { const q = parseQuote(window['v_'+c]); if(q) out[c]=q; });
+      done(Object.keys(out).length ? out : null);
+    };
+    s.onerror = () => done(null);
+    s.src = 'https://qt.gtimg.cn/q=' + codes.join(',');
+    document.head.appendChild(s);
+  });
+}
+
+function renderRepoPanel(quotes, stamp){
+  const body = document.getElementById('repobody');
+  const hint = document.getElementById('repohint');
+
+  // 三类数据：本次成功 → quotes；本次失败但有历史 → S.lastQuotes；从未成功 → 无
+  const src = quotes || S.lastQuotes;
+
+  if(!src){
+    body.innerHTML = '<tr><td colspan="6" style="padding:16px 11px;color:var(--tx3)">从未成功获取实时行情。产品表使用 ' + SNAP_DATE + ' 静态快照值；点右上角「重新抓取」重试。</td></tr>';
+    if(hint) hint.textContent = '无行情数据';
+    return;
+  }
+
+  const stale = !quotes;   // 用的是历史数据
+  const NA = '<span style="color:var(--tx3);font-size:11.5px">暂无有效报价</span>';
+  let rows = '', complete = 0, onlyG = 0, onlyR = 0;
+
+  REPO_CODES.forEach(c=>{
+    const g = src[c.g], r = src[c.r];
+    const hasG = !!(g && isFinite(g.price)), hasR = !!(r && isFinite(r.price));
+
+    if(!hasG && !hasR){
+      rows += `<tr>
+        <td><b>${c.term}</b>${(c.rank && S.subs.includes(c.rank))?' <span class="tag gold">已关注</span>':''}</td>
+        <td class="num" colspan="5" style="text-align:center;padding:10px">${NA}</td>
+      </tr>`;
+      return;
+    }
+
+    if(hasG && hasR) complete++;
+    else if(hasG) onlyG++;
+    else onlyR++;
+
+    let diffTxt = '—', col = 'var(--tx3)';
+    if(hasG && hasR){
+      const diff = (g.price - r.price) * 100;
+      diffTxt = (diff>0?'+':'') + diff.toFixed(1) + 'BP';
+      col = diff > 0.4 ? 'var(--gold)' : (diff < -0.4 ? 'var(--teal)' : 'var(--tx3)');
+    }
+    const best = hasG && hasR ? Math.max(g.price, r.price) : (hasG ? g.price : r.price);
+    const who = !(hasG && hasR) ? '单边' : ((g.price-r.price)*100 > 0.4 ? '沪市高' : ((g.price-r.price)*100 < -0.4 ? '深市高' : '持平'));
+    const prevSrc = hasG ? g.prev : r.prev;
+
+    rows += `<tr>
+      <td><b>${c.term}</b>${(c.rank && S.subs.includes(c.rank))?' <span class="tag gold">已关注</span>':''}${(!hasG||!hasR)?' <span class="tag gray">单边</span>':''}</td>
+      <td class="num">${hasG ? g.price.toFixed(3)+'%' : NA}</td>
+      <td class="num">${hasR ? r.price.toFixed(3)+'%' : NA}</td>
+      <td class="num" style="color:${col};font-weight:600">${diffTxt}</td>
+      <td class="num"><b style="color:var(--gold)">${best.toFixed(3)}%</b> <span style="font-size:11px;color:var(--tx3)">${who}</span></td>
+      <td class="num" style="color:var(--tx3)">${prevSrc!=null?prevSrc.toFixed(3)+'%':'—'}</td>
+    </tr>`;
+  });
+  body.innerHTML = rows || '<tr><td colspan="6" style="padding:16px 11px;color:var(--tx3)">没解析到数据</td></tr>';
+  if(hint){
+    const total = REPO_CODES.length;
+    const completeness = complete === total ? '' : `（${complete}/${total} 个期限两市齐全` +
+      (onlyG||onlyR ? `，另有 ${onlyG+onlyR} 个单边` : '') + '）';
+    if(stale){
+      hint.textContent = '⚠ 行情已过期 · 最后成功 ' + (S.lastQuoteTime||'时间未知') + completeness;
+      hint.style.color = 'var(--gold)';
+    } else if(complete === 0){
+      hint.textContent = '⚠ 只有单边报价（' + (onlyG+onlyR) + '/' + total + ' 个期限）· 不足以标记为实时';
+      hint.style.color = 'var(--gold)';
+    } else {
+      hint.textContent = (complete === total ? '实时 · ' : '⚠ 部分更新 · ') + (stamp||'刚刚') + completeness;
+      hint.style.color = complete === total ? '' : 'var(--gold)';
+    }
+  }
+}
+
+/* 高位提醒：沪深分别判断 */
+function renderAlert(quotes, reason){
+  const card = document.getElementById('alertcard');
+  const st = document.getElementById('alertState');
+  if(!card || !st) return;
+  if(!quotes){
+    st.textContent = reason || '行情没抓到，不触发提醒（避免用旧数据误报）。';
+    card.classList.remove('hot');
+    return;
+  }
+  // 分别取沪深两市最高价；缺失的一边保持 null，绝不当 0
+  let hMax = null, sMax = null;
+  REPO_CODES.forEach(c=>{
+    const g = quotes[c.g], r = quotes[c.r];
+    if(g && isFinite(g.price) && g.price > 0 && (!hMax || g.price > hMax.p)) hMax = {p:g.price, term:c.term};
+    if(r && isFinite(r.price) && r.price > 0 && (!sMax || r.price > sMax.p)) sMax = {p:r.price, term:c.term};
+  });
+
+  const sides = [hMax, sMax].filter(Boolean);
+  if(!sides.length){
+    st.textContent = '没有有效报价，不触发提醒。';
+    card.classList.remove('hot');
+    return;
+  }
+  const top = Math.max(...sides.map(x=>x.p));
+  card.classList.toggle('hot', top >= S.th);
+
+  const fmtSide = (label, o) =>
+    o ? `${label} <b>${o.p.toFixed(3)}%</b>（${o.term}）`
+      : `${label} <span style="color:var(--tx3)">暂无有效报价</span>`;
+  const missing = !hMax || !sMax ? '<br><span style="color:var(--gold)">⚠ 有市场缺失报价，本次判断仅基于有数据的一边</span>' : '';
+
+  if(top >= S.th){
+    st.innerHTML = `⚡ ${fmtSide('沪市', hMax)} · ${fmtSide('深市', sMax)}<br>
+      已有市场越过 <b>${S.th}%</b> 阈值 —— 值得动手${missing}`;
+  } else {
+    const gap = (S.th - top) * 100;
+    st.innerHTML = `${fmtSide('沪市', hMax)} · ${fmtSide('深市', sMax)}<br>
+      距 <b>${S.th}%</b> 阈值还差 <b>${gap.toFixed(1)}BP</b>${missing}`;
+  }
+}
+
+function renderWindow(){
+  const el = document.getElementById('alertWin');
+  if(!el) return;
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const last = new Date(y, m+1, 0);
+  const days = [];
+  const cur = new Date(last);
+  while(days.length < 2){
+    const w = cur.getDay();
+    if(w !== 0 && w !== 6) days.unshift(new Date(cur));
+    cur.setDate(cur.getDate()-1);
+  }
+  const start = days[0], end = days[days.length-1];
+  const fmt = d => (d.getMonth()+1)+'月'+d.getDate()+'日';
+  const span = ((end-start)/86400000 <= 1) ? (fmt(start)+'~'+fmt(end)) : (fmt(start)+'、'+fmt(end));
+  const today = new Date(y,m,now.getDate());
+  const isQ = [2,5,8,11].indexOf(m) >= 0;
+  const inWin = today >= start;
+  const diff = Math.round((start-today)/86400000);
+  let html;
+  if(inWin){
+    html = `<b style="color:var(--red)">现在就在月末窗口内（${span}）${isQ?'，且是季末':''}</b><br>最后两个交易日资金面通常最紧`;
+  } else {
+    html = `下次月末窗口：<b>${span}</b>${isQ?'（季末）':''} · 还有 <b>${diff}</b> 天<br>
+      <span style="color:var(--tx3)">按日历推算：只按周一至周五判断，未接入交易所休市与调休安排。这是观察窗口，不是交易日预测。</span>`;
+  }
+  el.innerHTML = html;
+}
+
+/* 订阅列表 */
+function renderSubs(){
+  const box = document.getElementById('subList');
+  const hint = document.getElementById('subhint');
+  if(!S.subs.length){
+    box.innerHTML = `<div class="empty">还没有关注任何产品<br><span style="font-size:12px">去「现金收益总览」页，点产品右边的「+ 关注」</span></div>`;
+    if(hint) hint.textContent = '0 个关注';
+    return;
+  }
+  box.innerHTML = S.subs.map(id=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    if(!p) return '';
+    return `<div class="sub-item">
+      <div class="sub-main">
+        <div class="sub-name">${p.name} ${statusTag(p.verify.yield)}${quoteBadge(p)}</div>
+        <div class="sub-meta">
+          <span>${p.cat}</span><span>${p.term}</span><span>${p.settle}</span><span>更新 ${p.update}</span>
+        </div>
+      </div>
+      <div class="sub-rate">
+        <b>${rateNum(p)}</b>
+        <span>${BASIS_LABEL[p.basis]}</span>
+      </div>
+      <button class="icon-btn" title="取消关注" onclick="toggleSub('${p.id}')">×</button>
+    </div>`;
+  }).join('');
+  if(hint) hint.textContent = S.subs.length + ' 个关注';
+}
+
+/* ── 逆回购历史：腾讯 ifzq 日K（_var 前缀可当脚本加载）── */
+function fetchOneHistory(code){
+  return new Promise(resolve=>{
+    const vn = 'KLINE';
+    try{ delete window[vn]; }catch(e){ window[vn] = undefined; }
+    const sc = document.createElement('script');
+    let done = false;
+    const fin = v => { if(done) return; done = true; clearTimeout(tm); try{ sc.remove(); }catch(e){} resolve(v); };
+    const tm = setTimeout(()=>fin(null), 8000);
+    sc.onload = () => {
+      const d = window[vn];
+      const arr = d && d.data && d.data[code] && d.data[code].day;
+      if(!arr || !arr.length) return fin(null);
+      fin(arr.map(r=>({
+        date: r[0], open: +r[1], close: +r[2], high: +r[3], low: +r[4]
+      })).filter(x=>isFinite(x.close) && x.close > 0));
+    };
+    sc.onerror = () => fin(null);
+    sc.src = 'https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?_var=' + vn +
+             '&param=' + code + ',day,,,30,qfq';
+    document.head.appendChild(sc);
+  });
+}
+
+/* ── 今日分时：ifzq minute/query（_var 可当脚本加载）── */
+function fetchOneMinute(code){
+  return new Promise(resolve=>{
+    const vn = 'MINQ';
+    try{ delete window[vn]; }catch(e){ window[vn] = undefined; }
+    const sc = document.createElement('script');
+    let done = false;
+    const fin = v => { if(done) return; done = true; clearTimeout(tm); try{ sc.remove(); }catch(e){} resolve(v); };
+    const tm = setTimeout(()=>fin(null), 8000);
+    sc.onload = () => {
+      const d = window[vn];
+      const node = d && d.data && d.data[code] && d.data[code].data;
+      const arr = node && node.data;
+      if(!arr || !arr.length) return fin(null);
+      const pts = arr.map(str=>{
+        const p = String(str).split(' ');
+        return { t: p[0], v: parseFloat(p[1]) };
+      }).filter(x=>x.t && isFinite(x.v) && x.v > 0);
+      fin(pts.length ? { pts, date: (node.date || '') } : null);
+    };
+    sc.onerror = () => fin(null);
+    sc.src = 'https://web.ifzq.gtimg.cn/appstock/app/minute/query?_var=' + vn + '&code=' + code;
+    document.head.appendChild(sc);
+  });
+}
+
+async function fetchMinute(){
+  const h = await fetchOneMinute('sh204001');
+  const z = await fetchOneMinute('sz131810');
+  if(!h && !z){ S.minute = null; renderMinute(); return; }
+  S.minute = { sh: h, sz: z };
+  renderMinute();
+}
+
+function renderMinute(){
+  const svg = document.getElementById('minchart');
+  const info = document.getElementById('mininfo');
+  const hint = document.getElementById('minhint');
+  if(!svg || !info) return;
+
+  const M = S.minute;
+  if(!M || (!M.sh && !M.sz)){
+    svg.innerHTML = '';
+    info.textContent = '分时数据获取失败（接口不通或断网）。不画假曲线。';
+    if(hint) hint.textContent = '暂无数据';
+    return;
+  }
+
+  const sh = (M.sh && M.sh.pts) || [];
+  const sz = (M.sz && M.sz.pts) || [];
+  const n = Math.max(sh.length, sz.length);
+
+  const W=720, H=190, L=42, R=14, T=14, B=24;
+  const pw = W-L-R, ph = H-T-B;
+
+  const vals = [].concat(sh.map(x=>x.v), sz.map(x=>x.v));
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = Math.max(0.02, (hi-lo)*0.15);
+  lo = Math.max(0, lo-pad); hi = hi+pad;
+
+  const X = i => L + (n<=1 ? pw/2 : pw*i/(n-1));
+  const Y = v => T + ph*(1 - (v-lo)/(hi-lo || 1));
+
+  let g = '';
+  for(let k=0;k<=3;k++){
+    const v = lo + (hi-lo)*k/3;
+    g += `<line x1="${L}" y1="${Y(v)}" x2="${L+pw}" y2="${Y(v)}" stroke="#18212e" stroke-width="1"/>`;
+    g += `<text x="${L-7}" y="${Y(v)+3.5}" fill="#5a6b82" font-size="10" text-anchor="end">${v.toFixed(2)}%</text>`;
+  }
+
+  const path = arr => arr.map((x,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(x.v).toFixed(1)}`).join('');
+  if(sh.length) g += `<path d="${path(sh)}" fill="none" stroke="#f2b544" stroke-width="1.6"/>`;
+  if(sz.length) g += `<path d="${path(sz)}" fill="none" stroke="#35d0ba" stroke-width="1.2" stroke-dasharray="4 3" opacity=".85"/>`;
+
+  // 标沪市盘中最高
+  if(sh.length){
+    let mi = 0;
+    sh.forEach((x,i)=>{ if(x.v > sh[mi].v) mi = i; });
+    const p = sh[mi];
+    g += `<circle cx="${X(mi)}" cy="${Y(p.v)}" r="3.5" fill="#f2b544"/>`;
+    g += `<text x="${X(mi)}" y="${Y(p.v)-8}" fill="#f2b544" font-size="10" text-anchor="middle">高 ${p.v.toFixed(3)}%</text>`;
+    const fmtT = t => t.slice(0,2)+':'+t.slice(2);
+    g += `<text x="${L}" y="${H-6}" fill="#5a6b82" font-size="10" text-anchor="start">${fmtT(sh[0].t)}</text>`;
+    g += `<text x="${L+pw/2}" y="${H-6}" fill="#5a6b82" font-size="10" text-anchor="middle">11:30 / 13:00</text>`;
+    g += `<text x="${L+pw}" y="${H-6}" fill="#5a6b82" font-size="10" text-anchor="end">${fmtT(sh[sh.length-1].t)}</text>`;
+  }
+  svg.innerHTML = g;
+
+  const hiAll = sh.length ? Math.max(...sh.map(x=>x.v)) : null;
+  const dateTxt = (M.sh && M.sh.date) ? M.sh.date : '';
+  if(hint) hint.textContent = `沪 GC001 实线 · 深 R-001 虚线${dateTxt ? ' · ' + dateTxt.slice(0,4)+'-'+dateTxt.slice(4,6)+'-'+dateTxt.slice(6,8) : ''}`;
+  info.innerHTML = (hiAll != null ? `今日盘中最高：<b style="color:var(--gold)">${hiAll.toFixed(3)}%</b>` : '') +
+    `<span style="color:var(--tx3)"> · 每根为一个分钟点（09:30–15:00），不是逐笔成交</span>`;
+}
+
+async function fetchHistory(){
+  const h = await fetchOneHistory('sh204001');
+  const sHist = await fetchOneHistory('sz131810');
+  if(!h && !sHist){
+    S.history = null;
+    renderHistory();
+    return;
+  }
+  S.history = { sh: h || [], sz: sHist || [] };
+  renderHistory();
+}
+
+function renderHistory(){
+  const svg = document.getElementById('histchart');
+  const info = document.getElementById('histinfo');
+  const hint = document.getElementById('histhint');
+  if(!svg || !info) return;
+
+  const H = S.history;
+  if(!H || (!H.sh.length && !H.sz.length)){
+    svg.innerHTML = '';
+    info.textContent = '历史行情获取失败（接口不通或断网）。不画假曲线，只显示上面表格里的当前报价。';
+    if(hint) hint.textContent = '暂无数据';
+    return;
+  }
+
+  const W=720, Ht=200, L=42, R=14, T=14, B=26;
+  const pw = W-L-R, ph = Ht-T-B;
+
+  // 取两市最近 N 个交易日（按日期对齐取较短的那条）
+  const sh = H.sh.slice(-30), sz = H.sz.slice(-30);
+  const n = Math.max(sh.length, sz.length);
+  const all = [].concat(sh.map(x=>x.close), sz.map(x=>x.close));
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = Math.max(0.05, (hi-lo)*0.15);
+  lo = Math.max(0, lo - pad); hi = hi + pad;
+
+  const X = i => L + (n<=1 ? pw/2 : pw * i / (n-1));
+  const Y = v => T + ph * (1 - (v - lo) / (hi - lo || 1));
+
+  let g = '';
+  // 网格 + y 轴
+  for(let k=0;k<=3;k++){
+    const v = lo + (hi-lo)*k/3;
+    g += `<line x1="${L}" y1="${Y(v)}" x2="${L+pw}" y2="${Y(v)}" stroke="#18212e" stroke-width="1"/>`;
+    g += `<text x="${L-7}" y="${Y(v)+3.5}" fill="#5a6b82" font-size="10" text-anchor="end">${v.toFixed(2)}%</text>`;
+  }
+
+  const path = arr => arr.map((x,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(x.close).toFixed(1)}`).join('');
+
+  if(sh.length) g += `<path d="${path(sh)}" fill="none" stroke="#f2b544" stroke-width="1.8"/>`;
+  if(sz.length) g += `<path d="${path(sz)}" fill="none" stroke="#35d0ba" stroke-width="1.4" stroke-dasharray="4 3" opacity=".85"/>`;
+
+  // 标出沪市最高点
+  if(sh.length){
+    let mi = 0;
+    sh.forEach((x,i)=>{ if(x.high > sh[mi].high) mi = i; });
+    const p = sh[mi];
+    g += `<circle cx="${X(mi)}" cy="${Y(p.close)}" r="4" fill="#f2b544"/>`;
+    g += `<text x="${X(mi)}" y="${Y(p.close)-9}" fill="#f2b544" font-size="10.5" text-anchor="middle">高 ${p.high.toFixed(2)}%</text>`;
+  }
+
+  // x 轴日期
+  if(sh.length){
+    g += `<text x="${L}" y="${Ht-8}" fill="#5a6b82" font-size="10" text-anchor="start">${sh[0].date.slice(5)}</text>`;
+    g += `<text x="${L+pw}" y="${Ht-8}" fill="#5a6b82" font-size="10" text-anchor="end">${sh[sh.length-1].date.slice(5)}</text>`;
+  }
+  svg.innerHTML = g;
+
+  // 近 5 日最高
+  const last5 = sh.slice(-5);
+  const mx = last5.length ? Math.max(...last5.map(x=>x.high)) : null;
+  const mxDay = last5.find(x=>x.high === mx);
+  if(hint) hint.textContent = `沪 GC001 实线 · 深 R-001 虚线 · 共 ${Math.max(sh.length, sz.length)} 个交易日`;
+  info.innerHTML =
+    (mx != null ? `近 5 个交易日最高：<b style="color:var(--gold)">${mx.toFixed(3)}%</b>（${mxDay ? mxDay.date.slice(5) : ''}）` : '') +
+    `<span style="color:var(--tx3)"> · 日 K 收盘价连成的线，不是当日分时走势</span>`;
+}
+
+/* ── 国债逆回购专区：沪深分别展示实际挂牌品种 ── */
+function renderRepoZone(){
+  const tb = document.getElementById('repobodyB');
+  if(!tb) return;
+  const src = S.lastQuotes;
+  const NA = '<span style="color:var(--tx3);font-size:11.5px">暂无报价</span>';
+
+  tb.innerHTML = REPO_CODES.map(c=>{
+    const g = src ? src[c.g] : null;
+    const r = src ? src[c.r] : null;
+    const hasG = !!(g && isFinite(g.price) && g.price > 0);
+    const hasR = !!(r && isFinite(r.price) && r.price > 0);
+
+    let status;
+    if(hasG && hasR) status = S.quoteStale ? '<span class="tag gold">已过期</span>' : '<span class="tag teal">实时</span>';
+    else if(hasG || hasR) status = '<span class="tag gray">单边</span>';
+    else status = '<span class="tag gray">无报价</span>';
+
+    const code = x => x.replace(/^(sh|sz)/,'').toUpperCase();
+    const sub = c.rank && S.subs.includes(c.rank) ? ' <span class="tag gold">已关注</span>' : '';
+
+    return `<tr>
+      <td><b>${c.term}</b>${sub}</td>
+      <td style="font-size:11.5px;color:var(--tx3)">${code(c.g)}</td>
+      <td style="font-size:11.5px;color:var(--tx3)">${code(c.r)}</td>
+      <td class="num">${hasG ? g.price.toFixed(3)+'%' : NA}</td>
+      <td class="num">${hasR ? r.price.toFixed(3)+'%' : NA}</td>
+      <td>${status}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── 逆回购单次交易测算（不做长期续作模拟） ── */
+function renderRepoCalc(){
+  const box = document.getElementById('repoCalc');
+  if(!box) return;
+  const amount = parseFloat(document.getElementById('repoAmount').value) || 0;
+  if(!amount){
+    box.innerHTML = '<div class="calc-row"><div style="color:var(--tx3);font-size:12.5px">请先填入本金</div></div>';
+    return;
+  }
+  const src = S.lastQuotes;
+  const rows = REPO_CODES.map(c=>{
+    const g = src ? src[c.g] : null;
+    const r = src ? src[c.r] : null;
+    const cand = [];
+    if(g && isFinite(g.price) && g.price > 0) cand.push(g.price);
+    if(r && isFinite(r.price) && r.price > 0) cand.push(r.price);
+    if(!cand.length) return null;
+    const rate = Math.max(...cand);
+    return { term:c.term, days:c.days, rate,
+             gain: amount * 10000 * (rate/100) * (c.days/365) };
+  }).filter(Boolean).sort((a,b)=>a.days - b.days);
+
+  if(!rows.length){
+    box.innerHTML = '<div class="calc-row"><div style="color:var(--tx3);font-size:12.5px">没有有效报价，无法测算</div></div>';
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="calc-row head">
+      <div>期限</div><div style="text-align:right">年化</div>
+      <div style="text-align:right">单次收益</div><div style="text-align:right">资金占用</div>
+    </div>
+    ${rows.map(x=>`<div class="calc-row">
+      <div style="font-weight:600">${x.term}</div>
+      <div class="mono">${x.rate.toFixed(3)}%</div>
+      <div class="mono" style="font-weight:700;color:var(--gold)">${x.gain.toFixed(2)} 元</div>
+      <div class="diff" style="color:var(--tx3)">${x.days} 天</div>
+    </div>`).join('')}
+    <div class="calc-row" style="background:rgba(255,255,255,.02)">
+      <div style="font-size:11.5px;color:var(--tx3);grid-column:1/-1">
+        本金 ${amount} 万 · 单次计息 = 本金 × 年化 ÷ 100 × 期限 ÷ 365
+        ${S.quoteStale ? ' · ⚠ 行情已过期，按最后成功报价测算' : ''}
+      </div>
+    </div>`;
+}
+
+function toggleSub(id){
+  const i = S.subs.indexOf(id);
+  if(i >= 0) S.subs.splice(i,1);
+  else { if(S.subs.length >= 20){ alert('最多关注 20 个'); return; } S.subs.push(id); }
+  lsSet('cwl_subs', S.subs);
+  renderSubs();
+  if(S.page==='B') renderProducts();
+}
+
+/* ═══════════════════════════════════════════
+   六、页面 B —— 产品表 / 筛选 / 测算
+   ═══════════════════════════════════════════ */
+function initCatFilter(){
+  const cats = [...new Set(PRODUCTS.filter(p=>p.cat !== '国债逆回购').map(p=>p.cat))];
+  const sel = document.getElementById('fCat');
+  cats.forEach(c=>{
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+}
+
+function filteredProducts(){
+  const f = S.filter;
+  let list = PRODUCTS.filter(p=>{
+    if(p.cat === '国债逆回购') return false;        // 逆回购已独立成专区
+    if(f.cat !== 'all' && p.cat !== f.cat) return false;
+    if(f.safety !== 'all' && safetyKind(p.safety) !== f.safety) return false;
+    if(f.status !== 'all' && p.verify.yield !== f.status) return false;
+    return true;
+  });
+  const by = {
+    rate:  (a,b)=>b.rate-a.rate,
+    term:  (a,b)=>a.termDays-b.termDays,
+    settle:(a,b)=>a.settleDays-b.settleDays,
+    update:(a,b)=>String(b.update).localeCompare(String(a.update))
+  }[f.sort] || ((a,b)=>b.rate-a.rate);
+  return list.sort(by);
+}
+
+function renderProducts(){
+  const list = filteredProducts();
+  const tb = document.getElementById('tbody');
+  const hint = document.getElementById('prodhint');
+  const mix = document.getElementById('mixWarn');
+
+  // 期限混合提示
+  const terms = [...new Set(list.map(p=>p.term))];
+  if(S.filter.sort === 'rate' && terms.length > 1){
+    mix.style.display = 'block';
+    mix.innerHTML = `⚠ 当前列表含 <b>${terms.length} 种不同期限</b>的产品。按收益率排序只是把数字从大到小摆好，` +
+      `<b>不代表它们可以互相替代</b>——1 年期 0.95% 和 10 年久期 ETF 的 3.55% 不是一回事。要看同类对比，请用上面的「类别」筛选。`;
+  } else {
+    mix.style.display = 'none';
+  }
+
+  tb.innerHTML = list.map(p=>{
+    const on = S.subs.includes(p.id);
+    const picked = S.picked.includes(p.id);
+    return `<tr>
+      <td>
+        <div style="font-weight:600;font-size:13.5px;cursor:pointer" onclick="toggleDetail('${p.id}')" title="点开看四项核实状态">${p.name} <span style="font-size:10px;color:var(--tx3)">▾</span></div>
+        <div style="font-size:11px;color:var(--tx3)">${p.cat} · ${p.src}</div>
+      </td>
+      <td class="num"><b style="font-size:15px;color:${p.basis==='historical'?'var(--blue)':'var(--tx)'}">${rateNum(p)}%</b>${(()=>{const e=effectiveRate(p);return e.live?'<div style="font-size:9.5px;color:var(--teal)">实时</div>':(e.stale?'<div style="font-size:9.5px;color:var(--gold)">已过期</div>':(p.basis==='realtime'?'<div style="font-size:9.5px;color:var(--tx3)">快照</div>':''));})()}</td>
+      <td>${basisTag(p.basis)}<div style="font-size:10px;color:var(--tx3);margin-top:2px">${p.basisNote||''}</div></td>
+      <td style="font-size:12px">${p.term}</td>
+      <td style="font-size:11.5px;color:var(--tx2);line-height:1.4">${p.settle}</td>
+      <td style="font-size:11.5px;color:var(--tx3);line-height:1.45">${p.liq}</td>
+      <td>${safetyTag(p.safety)}</td>
+      <td style="font-size:11.5px;color:var(--tx3)">${p.cap}</td>
+      <td>${statusTag(p.verify.yield)}</td>
+      <td style="white-space:nowrap">
+        <button class="add-btn ${on?'on':''}" onclick="toggleSub('${p.id}')">${on?'✓ 已关注':'+ 关注'}</button>
+        <br><button class="add-btn ${picked?'on':''}" style="margin-top:4px" onclick="togglePick('${p.id}')">${picked?'✓ 测算':'+ 测算'}</button>
+      </td>
+    </tr>
+    <tr id="det-${p.id}" style="display:${S.expanded.has(p.id)?'':'none'}">
+      <td colspan="10" style="background:#0b1219;padding:11px 16px">
+        <div style="display:flex;gap:22px;flex-wrap:wrap;font-size:12px;color:var(--tx2)">
+          <span>收益 ${statusTag(p.verify.yield)}</span>
+          <span>流动性 ${statusTag(p.verify.liquid)}</span>
+          <span>保障依据 ${statusTag(p.verify.guarantee)}</span>
+          <span>额度 ${statusTag(p.verify.cap)}</span>
+        </div>
+        <div style="margin-top:6px;font-size:11.5px;color:var(--tx3)">
+          保障：${p.safety} · 额度：${p.cap} · 来源：${p.src} · 更新：${p.update}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  if(hint) hint.textContent = `共 ${list.length} 个产品`;
+  renderCalc();
+}
+
+function toggleDetail(id){
+  if(S.expanded.has(id)) S.expanded.delete(id); else S.expanded.add(id);
+  const el = document.getElementById('det-'+id);
+  if(el) el.style.display = S.expanded.has(id) ? '' : 'none';
+}
+
+function togglePick(id){
+  const i = S.picked.indexOf(id);
+  if(i >= 0) S.picked.splice(i,1);
+  else { if(S.picked.length >= 4){ alert('最多同时对比 4 个'); return; } S.picked.push(id); }
+  renderProducts();
+}
+
+/* 按收益口径分别测算，不把一种口径的算法套到所有产品上 */
+function calcOne(p, amount, months){
+  const eff = effectiveRate(p);
+  const res = calcCore(p, amount, months, eff.v);
+  if(eff.stale){
+    res.note = '⚠ 行情已过期，按最后成功报价 ' + eff.v.toFixed(3) + '% 估算；' + res.note;
+  }
+  return res;
+}
+
+function calcCore(p, amount, months, r){
+  const holdYears = months / 12;
+  const base = amount * 10000;              // 元
+  const holdDays = months * 365 / 12;
+
+  if(p.basis === 'contract'){
+    if(p.termDays === 0){
+      return {gain: base * r/100 * holdYears, note:'按活期挂牌利率计息', ok:true};
+    }
+    if(holdDays > p.termDays + 5){
+      return {gain: base * r/100 * (p.termDays/365),
+              note:`只算首个 ${p.term} 期限的收益；超出部分的续存利率未知`, ok:true, partial:true};
+    }
+    if(holdDays < p.termDays - 5){
+      if(p.cat === '定期存款'){
+        return {gain: base * 0.05/100 * holdYears,
+                note:`提前支取按活期 0.05% 计息（不是 ${r}%）`, ok:true, penalty:true};
+      }
+      return {gain:null, note:`持有期短于产品期限 ${p.term}，提前退出的计息规则未核实`, ok:false};
+    }
+    return {gain: base * r/100 * holdYears, note:'按合同约定利率', ok:true};
+  }
+
+  if(p.basis === 'realtime'){
+    return {gain: base * r/100 * holdYears,
+            note:'按当前报价的情景估算，不代表重复操作能拿到同样收益', ok:true, scenario:true};
+  }
+  if(p.basis === 'historical'){
+    return {gain: base * r/100 * holdYears,
+            note:'按历史收益率机械外推，仅作情景比较，不代表未来收益', ok:true, scenario:true};
+  }
+  return {gain: base * r/100 * holdYears,
+          note:'估算值，不是合同确定收益', ok:true, scenario:true};
+}
+
+function renderCalc(){
+  const box = document.getElementById('calcResult');
+  const cnt = document.getElementById('calcCount');
+  const amount = parseFloat(document.getElementById('calcAmount').value) || 0;
+  const months = parseInt(document.getElementById('calcMonths').value) || 12;
+
+  if(cnt) cnt.textContent = S.picked.length + ' 个产品';
+
+  if(!S.picked.length){
+    box.innerHTML = `<div class="calc-row"><div style="color:var(--tx3);font-size:12.5px">在表格里点「+ 测算」选产品（最多 4 个）</div></div>`;
+    return;
+  }
+
+  const rows = S.picked.map(id=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    if(!p || p.cat === '国债逆回购') return null;   // 逆回购走专区单次测算
+    const c = calcOne(p, amount, months);
+    const end = new Date();
+    end.setMonth(end.getMonth() + months);
+    const endStr = `${end.getFullYear()}-${String(end.getMonth()+1).padStart(2,'0')}-${String(end.getDate()).padStart(2,'0')}`;
+    return { p, rate: effectiveRate(p).v, endStr, ...c };
+  }).filter(Boolean);
+
+  const valid = rows.filter(r=>r.ok && r.gain != null);
+  const best = valid.length ? Math.max(...valid.map(r=>r.gain)) : 0;
+
+  box.innerHTML = `
+    <div class="calc-row head">
+      <div>产品</div><div style="text-align:right">年化</div><div style="text-align:right">预计收益</div><div style="text-align:right">与前差额</div>
+    </div>
+    ${rows.map(r=>{
+      const has = r.gain != null;
+      const d = has ? r.gain - best : null;
+      const noteColor = r.penalty ? 'var(--red)' : (r.scenario || r.partial) ? 'var(--gold)' : 'var(--tx3)';
+      return `<div class="calc-row">
+        <div>
+          <div style="font-weight:600">${r.p.name}</div>
+          <div style="font-size:11px;color:var(--tx3)">${BASIS_LABEL[r.p.basis]} · ${r.p.term} · 到期约 ${r.endStr}</div>
+          <div style="font-size:10.5px;color:${noteColor};line-height:1.45">${r.note}</div>
+        </div>
+        <div class="mono">${r.rate.toFixed(r.p.basis==='realtime'?3:2)}%</div>
+        <div class="mono" style="font-weight:700;color:${r.p.basis==='historical'?'var(--blue)':'var(--gold)'}">${has?r.gain.toFixed(0)+' 元':'暂无法测算'}</div>
+        <div class="diff" style="color:${d==null?'var(--tx3)':(d<0?'var(--tx3)':'var(--tx2)')}">${d==null?'—':(d<0?d.toFixed(0)+' 元':'最高')}</div>
+      </div>`;
+    }).join('')}
+    <div class="calc-row" style="background:rgba(255,255,255,.02)">
+      <div style="font-size:11.5px;color:var(--tx3);grid-column:1/-1">
+        本金 ${amount} 万 × 持有 ${months} 个月 · 单利情景估算 ·
+        ${rows.some(r=>r.p.basis==='historical')?'含「历史收益」产品，数字不是承诺；':''}${rows.some(r=>r.scenario)?'含按当前报价/历史值推算的情景，不能当确定收益':''}
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   七、行情抓取
+   ═══════════════════════════════════════════ */
+async function fetchLive(manual){
+  const bar = document.getElementById('livebar');
+  const txt = document.getElementById('livetext');
+  const btn = document.getElementById('btnLive');
+  if(manual){ btn.disabled = true; btn.textContent = '抓取中…'; }
+  bar.classList.remove('err');
+  txt.textContent = '正在获取沪深两市逆回购行情…';
+
+  const codes = REPO_CODES.reduce((a,c)=>a.concat([c.g,c.r]), []);
+  const quotes = await jsonpQuotes(codes);
+
+  if(quotes){
+    // 完整度统计：沪深两边都有才算「完整」
+    const completeTerms = REPO_CODES.filter(c=>quotes[c.g] && quotes[c.r]).length;
+    const hOnly = REPO_CODES.filter(c=>quotes[c.g]).length;
+    const sOnly = REPO_CODES.filter(c=>quotes[c.r]).length;
+
+    if(completeTerms === 0){
+      // 只有单边或全部无效 → 不标记实时，已显示的实时值同步降级为过期
+      bar.classList.add('err');
+      let downgraded = 0;
+      PRODUCTS.forEach(pp=>{
+        if(pp.quoteStatus === 'live'){ pp.quoteStatus = 'stale'; downgraded++; }
+      });
+      S.quoteStale = true;
+      renderRepoPanel(quotes, null);
+      renderAlert(null, '只有单边报价（沪市 ' + hOnly + ' 个 / 深市 ' + sOnly + ' 个），没有一组完整的两市报价，不触发提醒。');
+      renderSubs();
+      renderRepoZone(); renderRepoCalc();
+      if(S.page==='B') renderProducts();
+      txt.innerHTML = `只获取到单边报价（沪市 ${hOnly} 个 / 深市 ${sOnly} 个），没有一组完整的两市报价。` +
+        `<b>不标记为实时</b>，产品表继续用上一次数据。`;
+      if(manual){ btn.disabled = false; btn.textContent = '重新抓取'; }
+      return;
+    }
+
+    let stamp = '', n = 0;
+    REPO_CODES.forEach(c=>{
+      const g = quotes[c.g], r = quotes[c.r];
+      if(!g || !r) return;
+      if(!stamp && g.when) stamp = g.when;
+      if(!c.rank) return;
+      const p = PRODUCTS.find(x=>x.id===c.rank);
+      if(p){
+        p.quoteRate = Math.max(g.price, r.price);   // 实时值单独保存，绝不覆盖 rate
+        p.quoteStatus = 'live';
+        p.quoteUpdatedAt = stamp || '刚刚';
+        n++;
+      }
+    });
+    S.lastQuotes = quotes;
+    S.lastQuoteTime = stamp;
+    S.quoteStale = false;
+    renderRepoPanel(quotes, stamp);
+    renderRepoZone(); renderRepoCalc();
+    renderAlert(quotes);
+    renderSubs();
+    if(S.page==='B') renderProducts();
+    if(completeTerms === REPO_CODES.length){
+      txt.innerHTML = `⚡ 沪深两市 ${completeTerms} 个期限全部更新（${stamp||'刚刚'}）· ${n} 个逆回购期限已并入 · 其余为 ${SNAP_DATE} 快照`;
+    } else {
+      bar.classList.add('err');
+      txt.innerHTML = `⚠ 仅 ${completeTerms}/${REPO_CODES.length} 个期限拿到完整的两市报价` +
+        `（沪市 ${hOnly} 个 / 深市 ${sOnly} 个），**不是全部更新**；缺失的期限显示「暂无有效报价」。`;
+    }
+  } else {
+    bar.classList.add('err');
+    // 把仍在显示「实时」的产品同步标为过期（保留 quoteRate 与 quoteUpdatedAt）
+    let staleMarked = 0;
+    PRODUCTS.forEach(p=>{
+      if(p.quoteStatus === 'live'){ p.quoteStatus = 'stale'; staleMarked++; }
+    });
+    S.quoteStale = true;
+    renderRepoPanel(null, null);          // 内部会回落到上次成功数据
+    renderAlert(null);
+    renderSubs();
+    renderRepoZone(); renderRepoCalc();
+    if(S.page==='B') renderProducts();
+    txt.innerHTML = S.lastQuotes
+      ? `本次刷新失败：保留最后一次成功行情（${S.lastQuoteTime||'时间未知'}），<b>已标记为过期</b>` +
+        (staleMarked ? `，${staleMarked} 个产品从「实时」改为「已过期」` : '') + `。`
+      : `行情没抓到（没网 / 接口不通）。产品表用 ${SNAP_DATE} 静态快照，不是实时值。`;
+  }
+  if(manual){ btn.disabled = false; btn.textContent = '重新抓取'; }
+}
+
+/* ═══════════════════════════════════════════
+   八、事件绑定 + 启动
+   ═══════════════════════════════════════════ */
+function bind(){
+  const $ = id => document.getElementById(id);
+
+  $('tabA').addEventListener('click', ()=>switchPage('A'));
+  $('tabB').addEventListener('click', ()=>switchPage('B'));
+  $('btnLive').addEventListener('click', ()=>fetchLive(true));
+
+  // 提醒阈值
+  const thEl = $('alertTh');
+  if(thEl){
+    thEl.value = S.th;
+    thEl.addEventListener('input', e=>{
+      const v = parseFloat(e.target.value);
+      if(isFinite(v) && v > 0){
+        S.th = v; lsSet('cwl_th', v);
+        renderAlert(S.lastQuotes);
+      }
+    });
+  }
+
+  // 筛选
+  ['fCat','fSafety','fStatus','fSort'].forEach(id=>{
+    const el = $(id);
+    if(!el) return;
+    el.addEventListener('change', ()=>{
+      S.filter.cat    = $('fCat').value;
+      S.filter.safety = $('fSafety').value;
+      S.filter.status = $('fStatus').value;
+      S.filter.sort   = $('fSort').value;
+      renderProducts();
+    });
+  });
+
+  // 测算输入
+  ['calcAmount','calcMonths'].forEach(id=>{
+    const el = $(id);
+    if(el) el.addEventListener('input', renderCalc);
+  });
+
+  const repoAmt = $('repoAmount');
+  if(repoAmt) repoAmt.addEventListener('input', renderRepoCalc);
+}
+
+function init(){
+  // 读本地存储
+  S.subs = lsGet('cwl_subs', DEFAULT_SUBS.slice());
+  const savedTh = lsGet('cwl_th', null);
+  if(typeof savedTh === 'number' && savedTh > 0) S.th = savedTh;
+
+  // 旧版本可能勾过逆回购，清理掉（它现在走专区）
+  S.picked = S.picked.filter(id=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    return p && p.cat !== '国债逆回购';
+  });
+
+  initCatFilter();
+  bind();
+  renderSubs();
+  renderRepoZone();
+  renderRepoCalc();
+  renderWindow();
+  switchPage('A');       // 默认进 A 页
+  fetchLive(false);      // 不阻塞渲染：先渲染静态内容，行情异步补
+  fetchHistory();        // 历史走势独立请求，失败不影响主流程
+  fetchMinute();         // 今日分时，同样独立
+}
+
+init();
+</script>
+</body>
+</html>
