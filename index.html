@@ -28,7 +28,7 @@ h1,h2,h3{margin:0;font-weight:700}
 button{font-family:inherit}
 
 /* 顶部 */
-header.top{padding:30px 0 16px}
+header.top{padding:30px 16px 16px}
 .kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;color:var(--gold);
   border:1px solid rgba(242,181,68,.3);background:rgba(242,181,68,.07);padding:3px 11px;border-radius:99px}
 h1{font-size:clamp(22px,3.6vw,30px);margin:12px 0 6px;line-height:1.3}
@@ -157,10 +157,22 @@ td.num{text-align:right;font-variant-numeric:tabular-nums}
 .calc-row .diff{font-size:12px;text-align:right}
 @media(max-width:640px){.calc-row{grid-template-columns:1fr 1fr;gap:4px}.calc-row.head{display:none}}
 
-footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--tx3);line-height:1.8}
+footer.wrap{margin-top:44px;padding-top:24px;border-top:1px solid var(--line);font-size:11.5px;color:var(--tx3);line-height:1.8}
 .tip{font-size:12.5px;color:var(--tx2);background:rgba(53,208,186,.05);border:1px solid rgba(53,208,186,.18);
   border-radius:10px;padding:11px 14px;line-height:1.7;margin-top:12px}
 .tip b{color:var(--teal)}
+
+/* 窄屏（手机）微调：更紧的边距 + 稍小标题 */
+@media(max-width:480px){
+  .wrap{padding:0 14px}
+  .tabs-in{padding:0 14px}
+  header.top{padding:24px 14px 14px}
+  h1{font-size:21px;line-height:1.32}
+  .sub{font-size:12.5px;line-height:1.6}
+  .tab{padding:11px 6px;font-size:13.5px}
+  .tab small{font-size:10px}
+  .sec-h h2{font-size:16px}
+}
 </style>
 </head>
 <body>
